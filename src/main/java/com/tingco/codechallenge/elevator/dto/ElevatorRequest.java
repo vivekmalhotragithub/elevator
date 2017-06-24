@@ -1,33 +1,38 @@
 package com.tingco.codechallenge.elevator.dto;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * Class which represents an Elevator request
+ * 
  * @author vivekmalhotra
  *
  */
 public class ElevatorRequest {
-	
+
 	// floor from which request was made
-	private int currentFloor;
-	
+	private int toFloor;
+
 	// floor where you want to go
 	private int destinationFloor;
-	
+
+	@NotNull
 	// timestamp when request was made
 	private long requestTimestamp;
 
 	/**
 	 * @return the currentFloor
 	 */
-	public int getCurrentFloor() {
-		return currentFloor;
+	public int getToFloor() {
+		return toFloor;
 	}
 
 	/**
-	 * @param currentFloor the currentFloor to set
+	 * @param toFloor
+	 *            the currentFloor to set
 	 */
-	public void setCurrentFloor(int currentFloor) {
-		this.currentFloor = currentFloor;
+	public void setToFloor(int toFloor) {
+		this.toFloor = toFloor;
 	}
 
 	/**
@@ -38,7 +43,8 @@ public class ElevatorRequest {
 	}
 
 	/**
-	 * @param destinationFloor the destinationFloor to set
+	 * @param destinationFloor
+	 *            the destinationFloor to set
 	 */
 	public void setDestinationFloor(int destinationFloor) {
 		this.destinationFloor = destinationFloor;
@@ -52,14 +58,11 @@ public class ElevatorRequest {
 	}
 
 	/**
-	 * @param requestTimestamp the requestTimestamp to set
+	 * @param requestTimestamp
+	 *            the requestTimestamp to set
 	 */
 	public void setRequestTimestamp(long requestTimestamp) {
 		this.requestTimestamp = requestTimestamp;
 	}
-	
-	
-	
-	
 
 }

@@ -2,7 +2,10 @@ package com.tingco.codechallenge.elevator.api.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,13 +15,18 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.eventbus.EventBus;
 import com.tingco.codechallenge.elevator.api.Elevator;
+import com.tingco.codechallenge.elevator.api.Elevator.Direction;
 import com.tingco.codechallenge.elevator.api.ElevatorController;
+import com.tingco.codechallenge.elevator.dto.ElevatorMoveEvent;
 
 /**
  * <p>
  * Class that represents a building Elevator controller. It implements the
- * {@link ElevatorController}. This controller will be initialized with 1. no of
- * {@link Elevator} and 2. total floors in building.
+ * {@link ElevatorController}. This controller will be initialized with
+ * <ul>
+ * <li>no of {@link Elevator}</li>
+ * <li>total floors in building</li>
+ * </ul>
  * </p>
  * 
  * @author vivekmalhotra
@@ -49,33 +57,82 @@ public class ElevatorControllerImpl implements ElevatorController {
 		LOGGER.info("Initializing Elevator Controller with " + numberOfElevators + " Elevators and Building floors "
 				+ totalBuildingFloors);
 
-		// creating all Elevators
-		for (int i = 0; i < numberOfElevators; i++) {
-			this.allElevators.add(new ElevatorImpl(i));
-		}
-
 		this.totalBuildingFloors = totalBuildingFloors;
 		this.executor = executor;
 		this.eventBus = eventBus;
+
+		// creating all Elevators
+		for (int i = 0; i < numberOfElevators; i++) {
+			Elevator elevator = new ElevatorImpl(i);
+			this.eventBus.register(elevator);
+			this.allElevators.add(elevator);
+		}
+
 	}
 
 	@Override
-	public Elevator requestElevator(int toFloor) {
-		//
-		// eventBus.register(object);
-		// ((ScheduledExecutorService)executor).
-		return null;
+	public Elevator requestElevator(final int toFloor) {
+		// if requested floor is more than the building floors
+		if (totalBuildingFloors < toFloor) {
+			String msg = String.format("No floor %s exists in building of %s floors ", toFloor, this.totalBuildingFloors);
+			LOGGER.error(msg);
+			throw new IllegalArgumentException(msg);
+		}
+		Elevator selected = null;
+		LOGGER.info("Elevator requested for Floor:" + toFloor);
+		final Optional<Elevator> selectedElevator = findElevator(toFloor);
+		if (selectedElevator.isPresent()) {
+
+			((ScheduledExecutorService) this.executor).schedule(new Runnable() {
+				@Override
+				public void run() {
+					//
+					ElevatorMoveEvent event = new ElevatorMoveEvent(toFloor, selectedElevator.get().getId());
+					ElevatorControllerImpl.this.eventBus.post(event);
+				}
+			}, 100, TimeUnit.MILLISECONDS);
+			LOGGER.info("Request for Floor:" + toFloor + " will be taken by Elevator:" + selectedElevator.get());
+			return selectedElevator.get();
+		}
+
+		return selected;
+	}
+
+	// find an Elevator to go to particular floor
+	private Optional<Elevator> findElevator(int toFloor) {
+		Optional<Elevator> elevator = allElevators.stream().filter(a -> Direction.NONE.equals(a.getDirection()))
+				.findAny();
+		if (!elevator.isPresent()) {
+
+			elevator = allElevators.stream()
+					.filter(a -> a.getDirection() == Direction.getInstance(a.currentFloor(), toFloor)).findAny();
+			if (!elevator.isPresent()) {
+
+				elevator = allElevators.stream().findAny();
+			}
+		}
+
+		return elevator;
 	}
 
 	@Override
 	public List<Elevator> getElevators() {
-		// TODO Auto-generated method stub
-		return null;
+		// return all elevators
+		return this.allElevators;
 	}
 
 	@Override
 	public void releaseElevator(Elevator elevator) {
-		// TODO Auto-generated method stub
+		//
+		Optional<Elevator> selectedElevator = this.allElevators.stream().filter(a -> a.getId() == elevator.getId())
+				.findFirst();
+		if (!selectedElevator.isPresent()) {
+			String msg = "No such Elevator exists for the given condition.";
+			LOGGER.error(msg);
+			throw new IllegalArgumentException(msg);
+		}
+		LOGGER.info("Release elevator:" + selectedElevator.get());
+		this.eventBus.unregister(selectedElevator.get());
 
 	}
 

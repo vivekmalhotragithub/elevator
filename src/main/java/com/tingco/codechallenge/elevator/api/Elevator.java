@@ -8,54 +8,64 @@ package com.tingco.codechallenge.elevator.api;
  */
 public interface Elevator {
 
-    /**
-     * Enumeration for describing elevator's direction.
-     */
-    enum Direction {
-        UP, DOWN, NONE
-    }
+	/**
+	 * Enumeration for describing elevator's direction.
+	 */
+	enum Direction {
+		UP, DOWN, NONE;
 
-    /**
-     * Tells which direction is the elevator going in.
-     *
-     * @return Direction Enumeration value describing the direction.
-     */
-    Direction getDirection();
+		public static Direction getInstance(int from, int to) {
+			int difference = to - from;
+			if (difference > 0) {
+				return UP;
+			} else if (difference < 0) {
+				return DOWN;
+			}
+			return NONE;
+		}
+	}
 
-    /**
-     * If the elevator is moving. This is the target floor.
-     *
-     * @return primitive integer number of floor
-     */
-    int getAddressedFloor();
+	/**
+	 * Tells which direction is the elevator going in.
+	 *
+	 * @return Direction Enumeration value describing the direction.
+	 */
+	Direction getDirection();
 
-    /**
-     * Get the Id of this elevator.
-     *
-     * @return primitive integer representing the elevator.
-     */
-    int getId();
+	/**
+	 * If the elevator is moving. This is the target floor.
+	 *
+	 * @return primitive integer number of floor
+	 */
+	int getAddressedFloor();
 
-    /**
-     * Command to move the elevator to the given floor.
-     *
-     * @param toFloor
-     *            int where to go.
-     */
-    void moveElevator(int toFloor);
+	/**
+	 * Get the Id of this elevator.
+	 *
+	 * @return primitive integer representing the elevator.
+	 */
+	int getId();
 
-    /**
-     * Check if the elevator is occupied at the moment.
-     *
-     * @return true if busy.
-     */
-    boolean isBusy();
+	/**
+	 * Command to move the elevator to the given floor.
+	 *
+	 * @param toFloor
+	 *            int where to go.
+	 */
+	void moveElevator(int toFloor);
 
-    /**
-     * Reports which floor the elevator is at right now.
-     *
-     * @return int actual floor at the moment.
-     */
-    int currentFloor();
+	/**
+	 * Check if the elevator is occupied at the moment.
+	 *
+	 * @return true if busy.
+	 */
+	boolean isBusy();
+
+	/**
+	 * Reports which floor the elevator is at right now.
+	 *
+	 * @return int actual floor at the moment.
+	 */
+	int currentFloor();
 
 }

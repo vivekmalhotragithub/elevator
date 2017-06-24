@@ -1,6 +1,8 @@
 package com.tingco.codechallenge.elevator.api.impl;
 
+import com.google.common.eventbus.Subscribe;
 import com.tingco.codechallenge.elevator.api.Elevator;
+import com.tingco.codechallenge.elevator.dto.ElevatorMoveEvent;
 
 /**
  * Implementation of {@link Elevator}. Each Elevator is identified by a unique
@@ -25,6 +27,9 @@ public class ElevatorImpl implements Elevator {
 	// current floor
 	private int currentFloor;
 
+	// target floor
+	private int addressedFloor;
+
 	public ElevatorImpl(int identifier) {
 		this.id = identifier;
 		this.direction = Direction.NONE;
@@ -39,20 +44,24 @@ public class ElevatorImpl implements Elevator {
 
 	@Override
 	public int getAddressedFloor() {
-		// TODO Auto-generated method stub
-		return 0;
+		// get addressed floor
+		return this.addressedFloor;
 	}
 
 	@Override
 	public int getId() {
-		//
+		// get id of Elevator
 		return this.id;
 	}
 
 	@Override
 	public void moveElevator(int toFloor) {
-		// TODO Auto-generated method stub
-
+		// set current floor
+		this.currentFloor = this.addressedFloor;
+		// set the addressed floor
+		this.addressedFloor = toFloor;
+		// set the direction of the floor
+		this.direction = Direction.getInstance(this.currentFloor, this.addressedFloor);
 	}
 
 	@Override
@@ -67,4 +76,45 @@ public class ElevatorImpl implements Elevator {
 		return this.currentFloor;
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null)
+			return false;
+		if (this == obj)
+			return true;
+
+		if (obj instanceof ElevatorImpl) {
+			ElevatorImpl elevator = (ElevatorImpl) obj;
+			if (this.id == elevator.id) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		int hashcode = 0;
+		hashcode += this.id;
+		return hashcode;
+	}
+	
+	@Override
+	public String toString(){
+		StringBuilder builder = new StringBuilder();
+		builder.append("[ ID: "+this.id);
+		builder.append(", current floor: "+ this.currentFloor);
+		builder.append(", direction: "+ this.direction + " ]");
+		return builder.toString();
+	}
+	
+	@Subscribe
+	public void eventHandler(ElevatorMoveEvent event){
+		if(event.getElevatorId() == this.id){
+			this.moveElevator(event.getToFloor());
+		}
+	}
+
+	
+	
 }
