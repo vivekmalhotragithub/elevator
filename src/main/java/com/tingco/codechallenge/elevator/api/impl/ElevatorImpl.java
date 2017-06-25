@@ -71,7 +71,7 @@ public class ElevatorImpl implements Elevator {
 	}
 
 	@Override
-	public int currentFloor() {
+	public int getCurrentFloor() {
 		// current floor
 		return this.currentFloor;
 	}

@@ -26,7 +26,7 @@ public class ElevatorTest {
 		// then
 		Assert.assertEquals(5, elevator.getId());
 		Assert.assertEquals(Direction.NONE, elevator.getDirection());
-		Assert.assertEquals(0, elevator.currentFloor());
+		Assert.assertEquals(0, elevator.getCurrentFloor());
 		Assert.assertFalse(elevator.isBusy());
 	}
 
@@ -39,7 +39,7 @@ public class ElevatorTest {
 		// test
 		Assert.assertEquals(5, elevator.getId());
 		Assert.assertEquals(Direction.UP, elevator.getDirection());
-		Assert.assertEquals(5, elevator.currentFloor());
+		Assert.assertEquals(5, elevator.getCurrentFloor());
 		Assert.assertEquals(10, elevator.getAddressedFloor());
 		Assert.assertTrue(elevator.isBusy());
 
@@ -54,7 +54,7 @@ public class ElevatorTest {
 		// test
 		Assert.assertEquals(5, elevator.getId());
 		Assert.assertEquals(Direction.DOWN, elevator.getDirection());
-		Assert.assertEquals(7, elevator.currentFloor());
+		Assert.assertEquals(7, elevator.getCurrentFloor());
 		Assert.assertEquals(2, elevator.getAddressedFloor());
 		Assert.assertTrue(elevator.isBusy());
 	}

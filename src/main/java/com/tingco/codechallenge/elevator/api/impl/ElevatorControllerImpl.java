@@ -107,7 +107,7 @@ public class ElevatorControllerImpl implements ElevatorController {
 		if (!elevator.isPresent()) {
 
 			elevator = allElevators.stream()
-					.filter(a -> a.getDirection() == Elevator.Direction.getInstance(a.currentFloor(), toFloor))
+					.filter(a -> a.getDirection() == Elevator.Direction.getInstance(a.getCurrentFloor(), toFloor))
 					.findAny();
 			if (!elevator.isPresent()) {
 
