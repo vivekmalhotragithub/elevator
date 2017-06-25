@@ -81,8 +81,7 @@ public final class ElevatorControllerEndPoints {
 		LOGGER.info("get details of all Elevators");
 		return elevatorController.getElevators();
 	}
-	
-	
+
 	/**
 	 * GET details of all Elevators
 	 * 
@@ -91,10 +90,11 @@ public final class ElevatorControllerEndPoints {
 	@RequestMapping(value = "/elevator/{elevatorId}/release", method = RequestMethod.GET)
 	public @ResponseBody ElevatorResponse releaseElevator(@PathVariable Integer elevatorId) {
 		LOGGER.info("Request to release Elevator:" + elevatorId);
-		Elevator elevator = new ElevatorImpl(elevatorId);
-		elevatorController.releaseElevator(elevator);
+		Elevator newElevator = new ElevatorImpl(elevatorId);
+		elevatorController.releaseElevator(newElevator);
 		ElevatorResponse response = new ElevatorResponse();
-		response.setResponse("Elevator " + elevator.getId() +" is released from all future requests.");
+		response.setResponse("Elevator " + newElevator.getId() + " is released for new future requests.");
+		response.setElevator(newElevator);
 		return response;
 	}
 }

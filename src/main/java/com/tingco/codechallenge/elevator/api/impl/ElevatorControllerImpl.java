@@ -1,6 +1,7 @@
 package com.tingco.codechallenge.elevator.api.impl;
 
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Executor;
@@ -15,7 +16,6 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.eventbus.EventBus;
 import com.tingco.codechallenge.elevator.api.Elevator;
-import com.tingco.codechallenge.elevator.api.Elevator.Direction;
 import com.tingco.codechallenge.elevator.api.ElevatorController;
 import com.tingco.codechallenge.elevator.dto.ElevatorMoveEvent;
 
@@ -27,6 +27,8 @@ import com.tingco.codechallenge.elevator.dto.ElevatorMoveEvent;
  * <li>no of {@link Elevator}</li>
  * <li>total floors in building</li>
  * </ul>
+ * This elevator controller assums that ground floor is denoted by 0th floor and
+ * Top most floor is nth floor defined in application configuration.
  * </p>
  * 
  * @author vivekmalhotra
@@ -45,10 +47,9 @@ public class ElevatorControllerImpl implements ElevatorController {
 	private EventBus eventBus;
 
 	// All elevators in a building
-	private List<Elevator> allElevators = new ArrayList<>();
+	private List<Elevator> allElevators = Collections.synchronizedList(new LinkedList<Elevator>());
 
 	// total floors in building
-	@Value("${com.tingco.elevator.building.floors}")
 	private int totalBuildingFloors;
 
 	public ElevatorControllerImpl(@Autowired Executor executor, @Autowired EventBus eventBus,
@@ -60,10 +61,10 @@ public class ElevatorControllerImpl implements ElevatorController {
 		this.totalBuildingFloors = totalBuildingFloors;
 		this.executor = executor;
 		this.eventBus = eventBus;
-
+		Elevator elevator = null;
 		// creating all Elevators
-		for (int i = 0; i < numberOfElevators; i++) {
-			Elevator elevator = new ElevatorImpl(i);
+		for (int i = 1; i <= numberOfElevators; i++) {
+			elevator = new ElevatorImpl(i);
 			this.eventBus.register(elevator);
 			this.allElevators.add(elevator);
 		}
@@ -72,9 +73,10 @@ public class ElevatorControllerImpl implements ElevatorController {
 
 	@Override
 	public Elevator requestElevator(final int toFloor) {
-		// if requested floor is more than the building floors
-		if (totalBuildingFloors < toFloor) {
-			String msg = String.format("No floor %s exists in building of %s floors ", toFloor, this.totalBuildingFloors);
+		// if requested floor is more than the building floors or less than 0
+		if (totalBuildingFloors - 1 < toFloor || toFloor < 0) {
+			String msg = String.format("No floor %s exists in building of %s floors ", toFloor,
+					this.totalBuildingFloors);
 			LOGGER.error(msg);
 			throw new IllegalArgumentException(msg);
 		}
@@ -100,12 +102,13 @@ public class ElevatorControllerImpl implements ElevatorController {
 
 	// find an Elevator to go to particular floor
 	private Optional<Elevator> findElevator(int toFloor) {
-		Optional<Elevator> elevator = allElevators.stream().filter(a -> Direction.NONE.equals(a.getDirection()))
-				.findAny();
+		Optional<Elevator> elevator = allElevators.stream()
+				.filter(a -> Elevator.Direction.NONE.equals(a.getDirection())).findAny();
 		if (!elevator.isPresent()) {
 
 			elevator = allElevators.stream()
-					.filter(a -> a.getDirection() == Direction.getInstance(a.currentFloor(), toFloor)).findAny();
+					.filter(a -> a.getDirection() == Elevator.Direction.getInstance(a.currentFloor(), toFloor))
+					.findAny();
 			if (!elevator.isPresent()) {
 
 				elevator = allElevators.stream().findAny();
@@ -131,9 +134,10 @@ public class ElevatorControllerImpl implements ElevatorController {
 			LOGGER.error(msg);
 			throw new IllegalArgumentException(msg);
 		}
-		LOGGER.info("Release elevator:" + selectedElevator.get());
+		LOGGER.info("Reset elevator:" + selectedElevator.get());
+		this.allElevators.remove(selectedElevator.get());
+		this.allElevators.add(elevator.getId() - 1, elevator);
 		this.eventBus.unregister(selectedElevator.get());
-
 	}
 
 }
