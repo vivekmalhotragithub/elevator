@@ -25,10 +25,10 @@ import com.tingco.codechallenge.elevator.dto.ElevatorMoveEvent;
  * {@link ElevatorController}. This controller will be initialized with
  * <ul>
  * <li>no of {@link Elevator}</li>
- * <li>total floors in building</li>
+ * <li>n - total floors in building</li>
  * </ul>
- * This elevator controller assums that ground floor is denoted by 0th floor and
- * Top most floor is nth floor defined in application configuration.
+ * This elevator controller assumes that ground floor is denoted by 0th floor and
+ * Top most floor is (n-1)th floor defined in application configuration.
  * </p>
  * 
  * @author vivekmalhotra

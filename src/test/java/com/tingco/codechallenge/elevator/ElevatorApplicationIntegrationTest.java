@@ -26,7 +26,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.tingco.codechallenge.elevator.config.ElevatorApplication;
 
 /**
- * Integration test case for {@link ElevatorApplication}
+ * Integration test class for {@link ElevatorApplication}. Use this class for
+ * Simulation purpose to check the behavior of the Controller logic to select
+ * Elevator for a requested floor. You can change the no of simulations using
+ * simulation property.
  *
  */
 @RunWith(SpringRunner.class)

@@ -52,3 +52,31 @@ or start the target JAR file
     mvn package
     java -jar target/elevator-1.0-SNAPSHOT.jar
 
+## Solution 
+Vivek Malhotra
+# Important classes
+ElevatorImpl: implementation of Elevator interface. I changed the method to get the current flor to getCurrentFloor so that we get this information in json object.
+
+ElevatorControllerImpl: This is implementation of ElevatorController interface.This controller will be initialized with
+ * no of Elevator
+ * n - total floors in building
+This elevator controller assumes that ground floor is denoted by 0th floor and Top most floor is (n-1)th floor defined in application configuration.
+
+ElevatorControllerEndPoint: This is the REST controller 
+
+
+# Application properties
+com.tingco.elevator.numberofelevators: number of elevators in the building
+com.tingco.elevator.building.floors: total floors in a building
+
+
+# Unit tests and Simulations
+
+ElevatorTest, ElevatorControllerTest: Unit test classes for ElevatorImpl and ElevatorControllerImpl
+
+ElevatorApplicationIntegrationTest : Integration test class for {@link ElevatorApplication}. Use this class for Simulation purpose to check the behavior of the Controller logic to select Elevator for a requested floor. You can change the no of simulations using simulation property. This class uses application-integrationtest.properties.
+
+# Logging and Monitoring
+for logging we are using sl4j. This can be configured to write to log stream in containerized environment.
+
+for monitoring the elevators you can use the /rest/v1/elevator/all endpoint to get the status of all Elevators.

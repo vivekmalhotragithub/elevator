@@ -2,7 +2,6 @@ package com.tingco.codechallenge.elevator.api;
 
 /**
  * Interface for an elevator object.
- *
  * @author Sven Wesley
  *
  */
