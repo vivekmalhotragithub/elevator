@@ -73,7 +73,7 @@ com.tingco.elevator.building.floors: total floors in a building
 
 * /rest/v1/elevator/all GET
 get all the Elevators and their details currently configured for the building
-json response
+	- Json response
 [  
    {  
       "id":1,
@@ -94,11 +94,11 @@ json response
 
 * /rest/v1/elevator/request POST
 request for an Elevator to a particular floor. You get the Elevator details in response which will attend the request.
-Json request
+	- Json request
 {
 	"toFloor": 8
 }
-Json response
+	- Json response
 {
     "elevator": {
         "id": 1,
@@ -112,7 +112,7 @@ Json response
 
 * /rest/v1/elevator/{elevatorId}/release GET
 Release the elevator with id for new future requests
-json response
+	- json response
 {  
    "elevator":{  
       "id":1,
@@ -142,10 +142,10 @@ for monitoring the elevators you can use the /rest/v1/elevator/all endpoint to g
 * The Dockerfile is present in src/main/docker folder and uses java:8 as base image.
 
 * Run the following command to deploy the artifact to a docker host
-- mvn package docker:build
+	- mvn package docker:build
 
 * Using docker deamon you can list the images
-- docker images
+	- docker images
 
 * Run the container using image name or id. replace the right port with one configured in application.properties 
-- docker run -p 8880:8880 -t tingcore/elevator
+	- docker run -p 8880:8880 -t tingcore/elevator
