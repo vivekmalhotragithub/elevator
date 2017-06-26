@@ -142,10 +142,10 @@ for monitoring the elevators you can use the /rest/v1/elevator/all endpoint to g
 * The Dockerfile is present in src/main/docker folder and uses java:8 as base image.
 
 * Run the following command to deploy the artifact to a docker host
-mvn package docker:build
+- mvn package docker:build
 
 * Using docker deamon you can list the images
-docker images
+- docker images
 
 * Run the container using image name or id. replace the right port with one configured in application.properties 
-docker run -p 8880:8880 -t tingcore/elevator
+- docker run -p 8880:8880 -t tingcore/elevator
